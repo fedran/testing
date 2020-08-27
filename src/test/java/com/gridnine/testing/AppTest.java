@@ -1,40 +1,64 @@
 package com.gridnine.testing;
 
-import org.junit.Test;
+import com.gridnine.testing.initial.Flight;
+import com.gridnine.testing.initial.Segment;
+import com.gridnine.testing.developed.SegmentSorter;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AppTest {
 
-    @Test(expected = NullPointerException.class)
-    public void sortSegmentNPETest() {
-        Sorter sorter = new Sorter();
-        List<Flight> flights = sorter.sortSegment(null).collect(Collectors.toList());
-    }
-
     @Test
     public void sortSegmentTest() {
-        List<Segment> segmentList = new ArrayList<>();
-        Segment segment1 = new Segment(LocalDateTime.now(), LocalDateTime.now());
-        segmentList.add(segment1);
-        Segment segment2 = new Segment(LocalDateTime.now().minusHours(5L), LocalDateTime.now().minusHours(3L));
-        segmentList.add(segment2);
-        Segment segment3 = new Segment(LocalDateTime.now().plusHours(2L), LocalDateTime.now().plusHours(3L));
-        segmentList.add(segment3);
-        Flight flight = new Flight(segmentList);
-        List<Flight> flightList = new ArrayList<>();
-        flightList.add(flight);
+        List<Segment> segmentList1 = new ArrayList<>();
+        List<Flight> flights = new ArrayList<>();
+        SegmentSorter segmentSorter = new SegmentSorter();
 
-        Sorter sorter = new Sorter();
-        List<Flight> flights = sorter.sortSegment(flightList.stream()).collect(Collectors.toList());
+        flights = segmentSorter.sortSegment(flights.stream())
+                .collect(Collectors.toList());
 
-        assertEquals(segment2, flight.getSegments().get(0));
-        assertEquals(segment1, flight.getSegments().get(1));
-        assertEquals(segment3, flight.getSegments().get(2));
+        assertTrue(flights.isEmpty());
+
+        Segment segment1 = new Segment(LocalDateTime.now(),
+                LocalDateTime.now());
+        segmentList1.add(segment1);
+
+        Flight flight1 = new Flight(segmentList1);
+        flights.add(flight1);
+
+        flights = segmentSorter.sortSegment(flights.stream())
+                .collect(Collectors.toList());
+
+        assertTrue(flights.get(0).getSegments().contains(segment1));
+
+        List<Segment> segmentList2 = new ArrayList<>();
+        Segment segment2 = new Segment(LocalDateTime.now().minusHours(5L),
+                LocalDateTime.now().minusHours(3L));
+        Segment segment3 = new Segment(LocalDateTime.now().plusHours(2L),
+                LocalDateTime.now().plusHours(3L));
+        Segment segment4 = new Segment(LocalDateTime.now().plusHours(7L),
+                LocalDateTime.now().plusHours(9L));
+        segmentList2.add(segment4);
+        segmentList2.add(segment2);
+        segmentList2.add(segment3);
+
+        Flight flight2 = new Flight(segmentList2);
+        flights.add(flight2);
+
+        flights = segmentSorter.sortSegment(flights.stream())
+                .collect(Collectors.toList());
+
+        System.out.println(flights);
+        assertEquals(segment1, flights.get(0).getSegments().get(0));
+        assertEquals(segment2, flights.get(1).getSegments().get(0));
+        assertEquals(segment3, flights.get(1).getSegments().get(1));
+        assertEquals(segment4, flights.get(1).getSegments().get(2));
     }
 }
