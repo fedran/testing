@@ -5,9 +5,10 @@ import com.gridnine.testing.initial.Flight;
 import com.gridnine.testing.initial.FlightBuilder;
 import com.gridnine.testing.developed.predicates.AfterCurrentTimePredicate;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.function.Predicate;
 
@@ -19,10 +20,9 @@ public class AfterCurrentTimePredicateTest {
     @Test
     public void testTest() {
         List<Flight> unfilteredFlights = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
-            List<Flight> list = FlightBuilder.createFlights();
-            unfilteredFlights.addAll(list);
-        }
+        Stream.generate(FlightBuilder::createFlights)
+                .limit(200)
+                .forEach(unfilteredFlights::addAll);
 
         Predicate<Flight> predicate = new AfterCurrentTimePredicate();
         List<Flight> filteredFlights = unfilteredFlights.stream()
