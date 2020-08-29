@@ -1,7 +1,6 @@
 package com.gridnine.testing.developed.predicates.validation;
 
 import com.gridnine.testing.developed.predicates.FlightPredicate;
-import com.gridnine.testing.initial.Segment;
 import com.gridnine.testing.initial.Flight;
 
 import java.util.Objects;
