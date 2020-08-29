@@ -16,12 +16,6 @@ public class Validator implements FlightPredicate {
         } else if (flight.getSegments().stream().anyMatch(Objects::isNull)) {
             throw new ValidationException("One of flights segment  is null");
         }
-        flight.getSegments()
-                .forEach(segment -> {
-                    if (segment.getDepartureDate().isAfter(segment.getArrivalDate())) {
-                        throw new ValidationException("ArrivalDate is before DepartureDate");
-                    }
-                });
         return true;
     }
 }
