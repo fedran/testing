@@ -1,43 +1,63 @@
 package com.gridnine.testing;
 
-import org.junit.jupiter.api.Test;
-import com.gridnine.testing.initial.Flight;
-import com.gridnine.testing.initial.FlightBuilder;
 import com.gridnine.testing.developed.predicates.AfterCurrentTimePredicate;
+import com.gridnine.testing.initial.Segment;
+import com.gridnine.testing.initial.Flight;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.time.LocalDateTime;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AfterCurrentTimePredicateTest {
 
     @Test
-    public void testTest() {
-        List<Flight> unfilteredFlights = new ArrayList<>();
-        Stream.generate(FlightBuilder::createFlights)
-                .limit(200)
-                .forEach(unfilteredFlights::addAll);
+    public void predateNullTest() {
+        assertThrows(NullPointerException.class, () -> {
+            var predicate = new AfterCurrentTimePredicate();
+            predicate.test(null);
+        });
+    }
 
-        Predicate<Flight> predicate = new AfterCurrentTimePredicate();
-        List<Flight> filteredFlights = unfilteredFlights.stream()
-                .filter(predicate)
-                .collect(Collectors.toList());
+    @Test
+    public void predicateTrueTest() {
+        Segment segment1 = new Segment(LocalDateTime.now().plusSeconds(1L),
+                LocalDateTime.now().plusHours(1L));
+        Segment segment2 = new Segment(LocalDateTime.now().plusHours(2L),
+                LocalDateTime.now().plusHours(3L));
+        Segment segment3 = new Segment(LocalDateTime.now().plusHours(4L),
+                LocalDateTime.now().plusHours(5L));
 
-        assertFalse(unfilteredFlights.stream()
-                .allMatch(flight -> flight.getSegments()
-                        .get(0)
-                        .getDepartureDate()
-                        .isAfter(LocalDateTime.now())));
-        assertTrue(filteredFlights.stream()
-                .allMatch(flight -> flight.getSegments()
-                        .get(0)
-                        .getDepartureDate()
-                        .isAfter(LocalDateTime.now())));
+        List<Segment> segmentList = new ArrayList<>();
+        segmentList.add(segment1);
+        segmentList.add(segment2);
+        segmentList.add(segment3);
+
+        Flight flight = new Flight(segmentList);
+
+        var predicate = new AfterCurrentTimePredicate();
+        assertTrue(predicate.test(flight));
+    }
+
+    @Test
+    public void predicateFalseTest() {
+        Segment segment1 = new Segment(LocalDateTime.now().minusHours(1L),
+                LocalDateTime.now().plusHours(1L));
+        Segment segment2 = new Segment(LocalDateTime.now().plusHours(2L),
+                LocalDateTime.now().plusHours(3L));
+        Segment segment3 = new Segment(LocalDateTime.now().plusHours(4L),
+                LocalDateTime.now().plusHours(5L));
+
+        List<Segment> segmentList = new ArrayList<>();
+        segmentList.add(segment1);
+        segmentList.add(segment2);
+        segmentList.add(segment3);
+
+        Flight flight = new Flight(segmentList);
+
+        var predicate = new AfterCurrentTimePredicate();
+        assertFalse(predicate.test(flight));
     }
 }

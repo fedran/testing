@@ -8,9 +8,7 @@ public class AfterCurrentTimePredicate implements FlightPredicate {
 
     @Override
     public boolean test(Flight flight) {
-        return flight.getSegments()
-                .get(0)
-                .getDepartureDate()
-                .isAfter(LocalDateTime.now());
+        LocalDateTime deppDate = flight.getSegments().get(0).getDepartureDate();
+        return !deppDate.isBefore(LocalDateTime.now());
     }
 }
