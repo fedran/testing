@@ -15,6 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ValidatorTest {
 
     @Test
+    public void validatorNullTest() {
+        assertThrows(ValidationException.class, () -> {
+            Validator validator = new Validator();
+            validator.test(null);
+        });
+    }
+
+    @Test
     public void nullInSegmentsValidatorTest() {
         assertThrows(ValidationException.class, () -> {
             List<Segment> segmentList = null;
