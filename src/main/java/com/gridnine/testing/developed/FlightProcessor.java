@@ -14,9 +14,10 @@ public class FlightProcessor {
     }
 
     public Stream<Flight> applyPredicates(Stream<Flight> flightStream) {
-        for (int i = 0; i < flightPredicates.size(); i++) {
-            flightStream = flightStream.filter(flightPredicates.get(i));
+        for (FlightPredicate flightPredicate : flightPredicates) {
+            flightStream = flightStream.filter(flightPredicate);
         }
         return flightStream;
     }
 }
+
